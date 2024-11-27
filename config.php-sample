@@ -1,0 +1,78 @@
+<?php
+
+	$config_server = [
+		'paths'    => [
+			'functions'  => 'C:/xampp/htdocs/pbx-webmanagement/functions.d',
+			'classes'    => 'C:/xampp/htdocs/pbx-webmanagement/classes.d',
+			'audit_log'  => 'C:/xampp/htdocs/otsr.backend/audit_log'
+		],
+		'api_keys' => [
+			'81df50a9-1d13-4005-b267-3cd176f46eb8' => [
+				'role' => 'role',
+				'desc' => 'Description of API role',
+				'pass' => 'qtsY2P8ae1HDienY'
+			]
+		],
+		'db'       => [
+			'type' => 'mysql',
+			'host' => 'localhost',
+			'name' => 'pbx',
+			// 'name' => 'otsr',
+			'user' => 'root',
+			'port' => 3306,
+			'pass' => ''
+		],
+		'api'      => [
+			'config' => [
+				'protocol' => 'http',
+				'server'   => 'pbx-api-config.local',
+				'port'     => 80,
+				'version'  => '1.0',
+				'username' => '1',
+				'password' => 'nhlKh46g4GwBmimODYo8LlfO2H6QiLhv'
+			]
+		]
+	];
+
+	require_once( $config_server['paths']['functions'] . '/function_init.php' );
+
+// JSONRPC Config variables
+	$config_client = [
+		'formats' => [
+			'date'     => 'n/d/Y',
+			'datetime' => 'n/d/Y g:ia'
+		],
+		'jsonrpc' => [
+			'method'          => 'http',
+			'server'          => 'jsonrpc_otsr_backend.springboard.local',
+			'port'            => 80,
+			'path'            => '/',
+//			'ssl_verify_peer' => FALSE,
+//			'ssl_verify_host' => FALSE,
+			'api_key'         => '81df50a9-1d13-4005-b267-3cd176f46eb8',
+			'api_pass'        => 'qtsY2P8ae1HDienY',
+			'files'           => [
+				'client' => 'C:\xampp\htdocs\jsonrpc_otsr_backend\www\client\php\jsonrpc.php'
+			],
+		]
+	];
+
+	include_once( $config_client['jsonrpc']['files']['client'] );
+
+/**
+ * Items below this are calculated values for convenience.  They derive their
+ * values from above, so they shouldn't be be directly modified.
+ */
+
+	$config_client['jsonrpc']['url'] =
+	    $config_client['jsonrpc']['method']
+	  . '://'
+	  . $config_client['jsonrpc']['server']
+	  . ':'
+	  . $config_client['jsonrpc']['port']
+	  . $config_client['jsonrpc']['path'];
+
+	$config_client['jsonrpc']['api_token'] =
+	    $config_client['jsonrpc']['api_key']
+	  . crypt( $config_client['jsonrpc']['api_pass'], '$6$' . substr( md5( uniqid( rand(), TRUE )), 0, 16 ));
+?>

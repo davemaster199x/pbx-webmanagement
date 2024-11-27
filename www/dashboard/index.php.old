@@ -1,0 +1,121 @@
+<?php include( "{$_SERVER['DOCUMENT_ROOT']}/includes/start.php" ); ?>
+<?php
+
+	if ( !loggedin() ) {
+		header( 'Location: /' );
+	}
+
+	$jsonrpc_client = new jsonrpc\client();
+	$jsonrpc_client->server( $config_client['jsonrpc']['url'] );
+
+	$get_users = new jsonrpc\method( 'user.get' );
+	$get_users->param( 'api_token', $config_client['jsonrpc']['api_token'] );
+	$get_users->param( 'hash',      $_SESSION['user']['hash'] );
+	$get_users->param( 'user_id',   $_SESSION['user']['user_id'] );
+	$get_users->id = $jsonrpc_client->generate_unique_id();
+
+	$jsonrpc_client->method( $get_users );
+	$jsonrpc_client->send();
+
+	$result = jsonrpc\client::parse_result( $jsonrpc_client->result );
+
+	if ( $result[ $get_users->id ]['status'] ) {
+		$user = $result[ $get_users->id ]['data']['users'][0];
+
+		if ( empty( $user['clients'] )) {
+		// User has no access to any clients, logout
+			header( 'Location: /logout.php' );
+			exit();
+		}
+/*
+
+		$get_clients    = array();
+		$get_extensions = array();
+
+		foreach ( $user['clients'] as $i => $client_id ) {
+			$get_clients[ $i ] = new jsonrpc\method( 'client.get' );
+			$get_clients[ $i ]->param( 'api_token', $config_client['jsonrpc']['api_token'] );
+			$get_clients[ $i ]->param( 'hash',      $_SESSION['user']['hash'] );
+			$get_clients[ $i ]->param( 'client_id', $client_id );
+			$get_clients[ $i ]->id = $jsonrpc_client->generate_unique_id();
+
+			$jsonrpc_client->method( $get_clients[ $i ] );
+
+			$get_extensions[ $i ] = new jsonrpc\method( 'client.get_extension' );
+			$get_extensions[ $i ]->param( 'api_token', $config_client['jsonrpc']['api_token'] );
+			$get_extensions[ $i ]->param( 'hash',      $_SESSION['user']['hash'] );
+			$get_extensions[ $i ]->param( 'client_id', $client_id );
+			$get_extensions[ $i ]->id = $jsonrpc_client->generate_unique_id();
+
+			$jsonrpc_client->method( $get_extensions[ $i ] );
+		}
+
+		$jsonrpc_client->send();
+
+		$result = jsonrpc\client::parse_result( $jsonrpc_client->result );
+
+		if ( $result[ $get_clients[0]->id ]['status'] ) {
+			$clients = array();
+
+			foreach ( $user['clients'] as $i => $client_id ) {
+				$clients[ $i ]               = $result[ $get_clients[ $i ]->id ]['data']['clients'][0];
+				$clients[ $i ]['extensions'] = $result[ $get_extensions[ $i ]->id ]['data']['extensions'];
+			}
+		}
+*/
+	}
+
+	$ajax_ext = array();
+
+?>
+<?php include( "{$_SERVER['DOCUMENT_ROOT']}/includes/header.php" ); ?>
+<?php foreach ( $clients as $client ) : ?>
+	<h2><?= $client['name']; ?></h2>
+	<table>
+		<thead>
+			<tr>
+				<th>Extension</th>
+				<th>Status</th>
+			</tr>
+		</thead>
+		<tbody>
+			<?php foreach ( $client['extensions'] as $extension ) : ?>
+				<tr>
+					<td><?= $extension['ext']; ?></td>
+					<td data-extension="<?= $extension['ext'] . '@' . $extension['context']; ?>"></td>
+				</tr>
+				<?php $ajax_ext[] = $extension['ext'] . '@' . $extension['context']; ?>
+			<?php endforeach; ?>
+		</tbody>
+	</table>
+<?php endforeach; ?>
+<script type="text/javascript">
+
+	$( document ).ready( function() {
+		update_status( '<?= implode( '|', $ajax_ext ); ?>' );
+
+		setInterval( 'update_status( "<?= implode( '|', $ajax_ext ); ?>" )', 30000 );
+	} );
+
+	function update_status( exts ) {
+	/*
+	 * Update Status
+	 * Updates the status for each extension provided.
+	 */
+
+		$.get( '/dashboard/status.ajax.php?exts=' + exts, function( data ) {
+			try {
+				var result = $.parseJSON( data );
+
+				$.each( result, function( i ) {
+					$( '[data-extension="' + result[ i ]['ext'] + '@' + result[ i ]['context'] + '"]' ).html( result[ i ]['status'] );
+				} );
+			} catch ( e ) {
+//				alert( 'Invalid response from server: ' + data );
+			}
+		} );
+	}
+
+</script>
+<?php include( "{$_SERVER['DOCUMENT_ROOT']}/includes/footer.php" ); ?>
+<?php include( "{$_SERVER['DOCUMENT_ROOT']}/includes/finish.php" ); ?>

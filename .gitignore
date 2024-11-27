@@ -1,0 +1,12 @@
+# JSON-RPC Config
+config.php
+
+# Apache Logs
+/apache2/
+
+# Generated CSS
+/www/css/pbxweb.css
+
+# Audit Log
+/audit_log
+

@@ -1,0 +1,129 @@
+<?php
+
+	function get_ext_status( $exts, $context ) {
+	/*
+	 * Get Ext Status
+	 * Returns the extension status from the hints via AMI.
+	 */
+
+	// Include AMI
+		global $_config;
+
+		include_once( "{$_config[ $_SERVER['SERVER_NAME'] ]['paths']['classes']}/asterisk/asterisk-manager-ami.php" );
+
+	// Connect to database
+		$pdo = \db_connect();
+
+	// Get AMI server details for the given extension(s)
+		$ami_query = <<<SQL
+  SELECT ami.*
+    FROM ami
+           INNER JOIN client
+                   ON ami.ami_id = client.ami_id
+           INNER JOIN extension
+                   ON extension.client_id = client.client_id
+   WHERE extension.ext     = :ext
+     AND extension.context = :context
+SQL;
+		$ami_result = $pdo->prepare( $ami_query );
+		$ami_result->execute( array(
+			':ext'     => $exts[0],
+			':context' => $context
+		));
+
+		$ami_row = $ami_result->fetch( PDO::FETCH_ASSOC );
+
+		$statuses = array();
+
+		try {
+		// Connect to AMI and authenticate
+
+			$ami = new \asterisk\manager\ami( $ami_row['server'], $ami_row['port'] );
+
+			$ami->login( $ami_row['username'], $ami_row['password'] );
+
+		// Get extension state
+			foreach ( $exts as $ext ) {
+				$ami_action = new \asterisk\manager\ami_action( 'ExtensionState' );
+
+				$ami_action->packet( 'Exten', $ext );
+				$ami_action->packet( 'Context', $context );
+
+				$ami->add_action( $ami_action );
+			}
+
+			$ami->submit();
+
+			$ami->parse_response( $ami->response );
+
+			foreach ( $ami->parse_response( $ami->response ) as $response ) {
+			// Loop through each response
+
+				$status = array();
+
+				foreach ( $response as $key => $value ) {
+				// Loop through values
+
+					if ( $key == 'Exten' ) {
+					// Get the ext of this response
+
+						$status['ext'] = $value;
+					} elseif ( $key == 'Context' ) {
+					// Get the context of this response
+
+						$status['context'] = $value;
+					} elseif ( $key == 'Status' ) {
+					// Get the status of this response
+
+						$bin_status = array();
+
+						if ( $value == -1 ) {
+							$bin_status[] = 'Extension Not Found';
+						} elseif ( $value == 0 ) {
+							$bin_status[] = 'Idle';
+						} else {
+							if ( $value & 1 ) {
+								$bin_status[] = 'In Use';
+							}
+
+							if ( $value & 2 ) {
+								$bin_status[] = 'Busy';
+							}
+
+							if ( $value & 4 ) {
+								$bin_status[] = 'Unavailable';
+							}
+
+							if ( $value & 8 ) {
+								$bin_status[] = 'Ringing';
+							}
+
+							if ( $value & 16 ) {
+								$bin_status[] = 'On Hold';
+							}
+						}
+
+						$status['status'] = implode( '|', $bin_status );
+					}
+				}
+
+				if ( !empty( $status )) {
+					$statuses[] = $status;
+				}
+			}
+		} catch ( Exception $e ) {
+
+			foreach ( $exts as $ext ) {
+
+				$statuses[] = array(
+					'ext'     => $ext,
+					'context' => $context,
+					'status'  => 'Server Not Reachable'
+				);
+			}
+		}
+
+		return $statuses;
+	}
+
+?>

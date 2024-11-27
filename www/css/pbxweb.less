@@ -1,0 +1,420 @@
+/* Zero out everything */
+
+	/*** No list-markers by default -
+	 *** must redefine bullets w/ bg graphics
+	 ***/
+	ul {
+		list-style: none;
+	}
+
+	/*** Avoid browser default inconsistent heading,
+	 *** font-sizes and pre/code
+	 ***/
+	body, h1, h2, h3, h4, h5, h6, pre, code, td {
+		font-size: 1em;
+	}
+
+	/*** Remove inconsistent (among browsers) -
+	 *** default padding or margin
+	 ***/
+	ul, li, h1, h2, h3, h4, h5, h6, pre, form, body, html, p, blockquote, fieldset,
+		input, label, div, dd, dt, dl, table, tr, td, img, hr {
+		margin: 0px;
+		padding: 0px;
+	}
+
+	/*** Prevent blue linked image borders
+	 ***/
+	a img,:link img,:visited img, fieldset {
+		border: none;
+	}
+
+	html {
+		height: 100%;
+	}
+
+/* Begin site CSS */
+	body {
+		font-family: arial;
+		font-size: 0;
+		height: 100%;
+
+	}
+
+	#login {
+		background: url('/images/bg-login.jpg') no-repeat 50% 0px;
+		background-size: 100% 100%;
+			-moz-background-size: 100% 100%;
+			-webkit-background-size: 100% 100%;
+	}
+
+	section, header {
+		font-size: 13px;
+	}
+
+/* Login Page */
+	section#login-form {
+		padding-top: 200px;
+
+		&>div {
+			background: rgba( 0, 0, 0, 0.3 );
+			margin: 0 auto;
+			padding: 20px;
+			width: 302px;
+		}
+
+		span.error {
+			color: #f00;
+			display: block;
+			font-weight: bold;
+		}
+
+		img {
+			padding-bottom: 10px;
+		}
+
+		input {
+			margin-bottom: 10px;
+		}
+
+		input[type=submit] {
+			margin-left: 252px;
+		}
+
+		.poweredby {
+			color: #fff;
+		}
+	}
+
+/* Header */
+	header {
+		background: #00a;
+		box-shadow: 0 0 5px #000;
+		height: 60px;
+		position: relative;
+
+		.logo {
+			left: 10px;
+			position: absolute;
+			top: 6px;
+		}
+
+		nav {
+			bottom: 2px;
+			position: absolute;
+
+			a {
+				color: #fff;
+			}
+
+			li {
+				display: inline-block;
+
+				a {
+					display: block;
+					font-size: 15px;
+					font-weight: bold;
+					padding: 0 10px;
+					text-decoration: none;
+				}
+			}
+		}
+
+		@media all and (min-width: 800px) {
+			nav {
+				left: 200px;
+			}
+		}
+
+
+		@media all and (max-width: 799px) {
+			nav {
+				left: 60px;
+			}
+		}
+	}
+
+/* Main */
+	section#main {
+		margin: 50px 0;
+	}
+
+/* Form Elements */
+	input[type=email], input[type=password], input[type=text], select, textarea {
+		background: #fff;
+		border: 1px solid #aaa;
+		width: 300px;
+	}
+
+	input[type=email], input[type=password], input[type=text], select {
+		height: 25px;
+	}
+
+	input[type=button], input[type=submit], a.button {
+		background: #00a;
+		border: 1px solid #07f;
+		color: #fff;
+		padding: 2px 5px;
+		text-decoration: none;
+	}
+
+	div {
+		&.input {
+			padding-bottom: 10px;
+
+			span {
+				display: inline-block;
+
+				&.label {
+					font-weight: bold;
+					padding-right: 5px;
+					text-align: right;
+					vertical-align: top;
+					width: 150px;
+				}
+			}
+		}
+
+		&.button {
+			margin-left: 159px;
+		}
+
+		&.button + .button {
+			margin: 0;
+		}
+
+		&.checkbox {
+
+			span.input {
+
+				span {
+					display: inline-block;
+
+					&:nth-child(odd) {
+						padding-right: 2px;
+						vertical-align: -2px;
+					}
+
+					&:nth-child(even) {
+					}
+				}
+			}
+		}
+
+		&.sub {
+			border-left: 1px solid #ccc;
+			margin-left: 160px;
+		}
+
+		&.width-50px {
+
+			input, select, textarea {
+				width: 50px;
+			}
+		}
+
+		&.width-100px {
+
+			input, select, textarea {
+				width: 100px;
+			}
+		}
+
+		&.width-200px {
+
+			input, select, textarea {
+				width: 200px;
+			}
+		}
+
+		&.width-250px {
+
+			input, select, textarea {
+				width: 250px;
+			}
+		}
+	}
+
+/* Tables */
+	table {
+		border-collapse: collapse;
+		margin-top: 10px;
+		margin-bottom: 20px;
+		width: 100%;
+
+		tr {
+			&:nth-child(2n+1) {
+				background: #f4f4f4;
+			}
+
+			&:nth-child(2n) {
+				background: #ececec;
+			}
+
+			th {
+				background: #555;
+				background-size: contain;
+				border-right: 1px solid #373737;
+				color: #fff;
+				font-size: 12px;
+				height: 30px;
+				text-align: left;
+			}
+
+			td {
+				border: 1px solid #d4d4d4;
+				font-size: 13px;
+				height: 30px;
+			}
+
+			th, td {
+				padding: 0 15px;
+
+				&.center {
+					text-align: center;
+				}
+
+				&.width10 {
+					width: 10%;
+				}
+
+				&.width20 {
+					width: 20%;
+				}
+
+				&.width30 {
+					width: 30%;
+				}
+
+				&.width40 {
+					width: 40%;
+				}
+
+				&.width50 {
+					width: 50%;
+				}
+
+				&.width60 {
+					width: 60%;
+				}
+
+				&.width70 {
+					width: 70%;
+				}
+
+				&.width80 {
+					width: 80%;
+				}
+
+				&.width90 {
+					width: 90%;
+				}
+
+				&.width100 {
+					width: 100%;
+				}
+
+				a {
+					color: #000;
+					font-weight: bold;
+					text-decoration: none;
+				}
+			}
+		}
+	}
+
+/* Popup */
+	.popup {
+		background: #fff;
+		border: 1px solid #d7d8da;
+		font-size: 13px;
+		position: relative;
+
+		.container {
+			left: 0;
+			padding: 10px;
+			position: absolute;
+			top: 20px;
+			z-index: 3;
+		}
+
+		.close {
+			background: url('/images/close_x.png');
+			height: 11px;
+			position: absolute;
+			right: 5px;
+			top: 4px;
+			width: 11px;
+			z-index: 2;
+		}
+
+		.title-bar {
+			background: #21304d;
+			color: #4d97dc;
+			cursor: default;
+			font-weight: bold;
+			height: 20px;
+			line-height: 20px;
+			position: absolute;
+			text-align: center;
+			top: 0;
+			width: 100%;
+			z-index: 1;
+		}
+	}
+
+/* Misc */
+	div.error {
+		color: #f00;
+		font-size: 16px;
+		font-weight: bold;
+	}
+
+	h2 {
+		font-size: 16px;
+		margin-top: 10px;
+
+		&.report-header {
+			cursor: default;
+		}
+	}
+
+	hr {
+		margin: 10px 0;
+	}
+
+	.frame {
+		margin: 0 auto;
+		width: 1680px;
+	}
+
+	@media all and (min-width: 1680px) {
+		.frame {
+			width: 1680px;
+		}
+	}
+
+	@media all and (max-width: 1679px) {
+		.frame {
+			width: 100%;
+		}
+	}
+
+	.popup {
+
+		.container {
+			text-align: center;
+
+			div {
+				display: inline-block;
+
+				a {
+					color: #000;
+					font-size: 16px;
+					font-weight: bold;
+					text-decoration: none;
+				}
+			}
+		}
+	}
+
